@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>越秀区四下期末预测题库 - 刷题系统</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:#f2f2f7;color:#1c1c1e;-webkit-user-select:none;user-select:none;padding-bottom:20px}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:#fff;border-bottom:1px solid #e5e5ea;display:-webkit-flex;display:flex;padding:0 12px;height:50px;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-around;justify-content:space-around}
+.nav a{text-decoration:none;color:#8e8e93;font-size:14px;padding:8px 16px;border-radius:20px;-webkit-transition:all .2s;transition:all .2s;font-weight:500}
+.nav a.active{color:#fff}
+.nav a.home-act.active{background:#ff9500}
+.nav a.quiz-act.active{background:#007aff}
+.nav a.wrong-act.active{background:#ff3b30}
+.nav a.report-act.active{background:#34c759}
+.page{display:none;padding:60px 12px 20px}
+.page.active{display:block}
+.card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.stat-row{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.stat-item{-webkit-flex:1;flex:1;min-width:80px;background:#fff;border-radius:12px;padding:12px;text-align:center}
+.stat-val{font-size:28px;font-weight:700;color:#007aff}
+.stat-lbl{font-size:11px;color:#8e8e93;margin-top:4px}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;margin-right:4px}
+.tag-math{background:#e3f2ff;color:#007aff}
+.tag-chn{background:#ffe5e5;color:#ff3b30}
+.tag-eng{background:#f0e6ff;color:#af52de}
+.tag-diff{background:#fff3cd;color:#856404}
+.btn{display:inline-block;padding:10px 20px;border-radius:22px;font-size:15px;font-weight:600;border:none;cursor:pointer;-webkit-transition:all .15s;transition:all .15s;text-align:center}
+.btn:active{-webkit-transform:scale(0.96);transform:scale(0.96)}
+.btn-blue{background:#007aff;color:#fff}
+.btn-red{background:#ff3b30;color:#fff}
+.btn-green{background:#34c759;color:#fff}
+.btn-gray{background:#e5e5ea;color:#1c1c1e}
+.btn-orange{background:#ff9500;color:#fff}
+.btn-outline{background:transparent;border:2px solid #007aff;color:#007aff}
+.btn-sm{padding:6px 14px;font-size:13px}
+.btn-block{display:block;width:100%}
+.quiz-header{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;margin-bottom:12px}
+.quiz-progress{font-size:13px;color:#8e8e93}
+.quiz-question{font-size:16px;line-height:1.6;margin-bottom:16px;color:#1c1c1e;white-space:pre-wrap}
+.opt-item{display:block;width:100%;padding:14px 16px;margin-bottom:8px;border:2px solid #e5e5ea;border-radius:12px;background:#fff;text-align:left;font-size:15px;cursor:pointer;-webkit-transition:all .15s;transition:all .15s}
+.opt-item:active{-webkit-transform:scale(0.98);transform:scale(0.98)}
+.opt-item.selected{border-color:#007aff;background:#e3f2ff}
+.opt-item.correct{border-color:#34c759;background:#e8f8ed;color:#1c7a36}
+.opt-item.wrong{border-color:#ff3b30;background:#ffe5e5;color:#b71c1c}
+.fill-input{width:100%;padding:14px 16px;border:2px solid #e5e5ea;border-radius:12px;font-size:15px;outline:none;-webkit-transition:border .2s;transition:border .2s}
+.fill-input:focus{border-color:#007aff}
+.fill-input.correct{border-color:#34c759;background:#e8f8ed}
+.fill-input.wrong{border-color:#ff3b30;background:#ffe5e5}
+.feedback{padding:12px 16px;border-radius:12px;margin:12px 0;font-size:14px;line-height:1.6}
+.feedback.correct{background:#e8f8ed;color:#1c7a36;border:1px solid #b7dfc5}
+.feedback.wrong{background:#ffe5e5;color:#b71c1c;border:1px solid #ffcdd2}
+.exit-btn{position:fixed;top:8px;right:12px;font-size:22px;color:#8e8e93;cursor:pointer;z-index:101;background:#fff;border:1px solid #e5e5ea;border-radius:50%;width:36px;height:36px;text-align:center;line-height:34px;padding:0}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:200;display:none;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center}
+.overlay.show{display:-webkit-flex;display:flex}
+.dialog{background:#fff;border-radius:20px;padding:24px;width:calc(100% - 48px);max-width:360px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.15)}
+.dialog h3{margin-bottom:8px;font-size:17px}
+.dialog p{margin-bottom:16px;color:#8e8e93;font-size:14px;line-height:1.5}
+.dialog .btn{margin:6px}
+.filter-bar{display:-webkit-flex;display:flex;gap:6px;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin-bottom:12px}
+.filter-btn{padding:6px 12px;border-radius:16px;font-size:12px;border:1px solid #e5e5ea;background:#fff;cursor:pointer;-webkit-transition:all .15s;transition:all .15s}
+.filter-btn.active{background:#007aff;color:#fff;border-color:#007aff}
+.wrong-item{padding:12px;border-bottom:1px solid #f2f2f7}
+.wrong-item:last-child{border-bottom:none}
+.wrong-actions{display:-webkit-flex;display:flex;gap:6px;margin-top:8px;-webkit-flex-wrap:wrap;flex-wrap:wrap}
+.progress-bar{height:6px;border-radius:3px;background:#e5e5ea;margin:8px 0;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;-webkit-transition:width .3s;transition:width .3s}
+.rank-badge{display:inline-block;padding:4px 12px;border-radius:14px;font-size:13px;font-weight:700;background:linear-gradient(135deg,#ff9500,#ff5e3a);color:#fff}
+.combo-indicator{position:fixed;top:60px;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);background:#ff9500;color:#fff;padding:6px 16px;border-radius:16px;font-size:13px;font-weight:600;z-index:99;display:none;-webkit-animation:bounceIn .4s;animation:bounceIn .4s;pointer-events:none}
+@-webkit-keyframes bounceIn{0%{-webkit-transform:translateX(-50%) scale(0.5);opacity:0}70%{-webkit-transform:translateX(-50%) scale(1.1)}100%{-webkit-transform:translateX(-50%) scale(1);opacity:1}}
+@keyframes bounceIn{0%{transform:translateX(-50%) scale(0.5);opacity:0}70%{transform:translateX(-50%) scale(1.1)}100%{transform:translateX(-50%) scale(1);opacity:1}}
+.subject-stat{margin-bottom:10px}
+.subject-stat .label-row{display:-webkit-flex;display:flex;-webkit-justify-content:space-between;justify-content:space-between;font-size:13px;margin-bottom:2px}
+</style>
+</head>
+<body>
+<button class="exit-btn" id="exitBtn">✕</button>
+<div class="nav" id="navbar">
+<a href="javascript:void(0)" class="active home-act" onclick="switchPage('home')">⌂ 首页</a>
+<a href="javascript:void(0)" class="quiz-act" onclick="switchPage('quiz')">✎ 刷题</a>
+<a href="javascript:void(0)" class="wrong-act" onclick="switchPage('wrong')">✖ 错题</a>
+<a href="javascript:void(0)" class="report-act" onclick="switchPage('report')">≡ 报告</a>
+</div>
+<div class="combo-indicator" id="comboMsg"></div>
+
+<div class="page active" id="page-home">
+<div class="card" style="text-align:center;padding:24px">
+<div style="font-size:48px;margin-bottom:8px">🎓</div>
+<h2 style="margin-bottom:4px">越秀区四下期末预测题库</h2>
+<p style="color:#8e8e93;font-size:13px">2026年 数学·语文·英语</p>
+<div id="rankBadge" style="margin-top:12px"></div>
+</div>
+<div class="card">
+<div style="font-weight:600;margin-bottom:8px">⭐ 我的积分</div>
+<div style="font-size:36px;font-weight:700;color:#ff9500" id="totalPoints">0</div>
+<div style="font-size:12px;color:#8e8e93;margin-top:4px" id="rankTitle">学习新手</div>
+</div>
+<div class="stat-row">
+<div class="stat-item"><div class="stat-val" id="homeTotal" style="color:#007aff">0</div><div class="stat-lbl">总答题</div></div>
+<div class="stat-item"><div class="stat-val" id="homeCorrect" style="color:#34c759">0</div><div class="stat-lbl">正确率</div></div>
+<div class="stat-item"><div class="stat-val" id="homeCombo" style="color:#ff9500">0</div><div class="stat-lbl">当前连对</div></div>
+<div class="stat-item"><div class="stat-val" id="homeWrong" style="color:#ff3b30">0</div><div class="stat-lbl">错题数</div></div>
+</div>
+<div class="card">
+<button class="btn btn-blue btn-block" onclick="switchPage('quiz')" style="margin-bottom:8px">▶ 开始刷题</button>
+<button class="btn btn-outline btn-block" onclick="switchPage('wrong')">📖 查看错题本</button>
+</div>
+</div>
+
+<div class="page" id="page-quiz">
+<div class="quiz-header">
+<span class="quiz-progress" id="quizRound"></span>
+<button class="btn btn-gray btn-sm" onclick="startNewRound()">↻ 换一批</button>
+</div>
+<div id="quizContent"></div>
+</div>
+
+<div class="page" id="page-wrong">
+<div class="card">
+<div class="stat-row">
+<div class="stat-item"><div class="stat-val" style="color:#ff3b30" id="wrongTotal">0</div><div class="stat-lbl">总错题次</div></div>
+<div class="stat-item"><div class="stat-val" style="color:#ff9500" id="wrongUnique">0</div><div class="stat-lbl">不同题数</div></div>
+<div class="stat-item"><div class="stat-val" style="color:#b71c1c" id="wrongStubborn">0</div><div class="stat-lbl">顽固错题</div></div>
+</div>
+<button class="btn btn-red btn-block" onclick="redoWrong()" style="margin-top:8px">🔄 重做错题模式</button>
+</div>
+<div class="filter-bar">
+<button class="filter-btn active" onclick="filterWrong('all')">全部</button>
+<button class="filter-btn" onclick="filterWrong('数学')">数学</button>
+<button class="filter-btn" onclick="filterWrong('语文')">语文</button>
+<button class="filter-btn" onclick="filterWrong('英语')">英语</button>
+<button class="filter-btn" onclick="filterWrong('stubborn')">顽固错题</button>
+</div>
+<div id="wrongList" class="card" style="padding:0"></div>
+</div>
+
+<div class="page" id="page-report">
+<div class="card">
+<h3 style="margin-bottom:12px">📊 学情报告</h3>
+<div class="stat-row">
+<div class="stat-item"><div class="stat-val" id="rptTotal">0</div><div class="stat-lbl">总题数</div></div>
+<div class="stat-item"><div class="stat-val" style="color:#34c759" id="rptRate">0%</div><div class="stat-lbl">正确率</div></div>
+<div class="stat-item"><div class="stat-val" style="color:#ff3b30" id="rptWrong">0</div><div class="stat-lbl">错题数</div></div>
+<div class="stat-item"><div class="stat-val" style="color:#ff9500" id="rptPoints">0</div><div class="stat-lbl">总积分</div></div>
+</div>
+</div>
+<div class="card">
+<h3 style="margin-bottom:8px">⚠ 薄弱知识点 TOP5</h3>
+<div id="weakPoints"></div>
+</div>
+<div class="card">
+<h3 style="margin-bottom:8px">📈 各科目统计</h3>
+<div id="subjStats"></div>
+</div>
+<div class="card">
+<h3 style="margin-bottom:8px">🏆 积分规则</h3>
+<div style="font-size:12px;color:#8e8e93;line-height:1.8">
+• 基础分：每题答对 +10分<br>
+• 难度加成：易×1 / 中×1.5 / 难×2<br>
+• 低概率题加成：预测概率&lt;0.5的题 ×1.5<br>
+• 连对奖励：3题+5分 / 5题+10分 / 10题+20分<br>
+• 首刷奖励：首次答对某知识点 +3分<br>
+• 等级：0新秀→50新手→200学者→400达人→700高手→1000王者
+</div>
+</div>
+</div>
+
+<div class="overlay" id="exitOverlay">
+<div class="dialog">
+<h3>退出刷题</h3>
+<p>当前进度已保存，可以在错题本中继续练习。</p>
+<button class="btn btn-gray" onclick="closeExit()">继续刷题</button>
+<button class="btn btn-red" onclick="doExit()">退出</button>
+</div>
+</div>
+
+<script>
+var QB = [{"id":"MATH_01","subject":"数学","knowledge_tag":"小数的意义与性质","question_type":"选择题","predicted_probability":0.95,"question":"下面各数中，读数时只读一个“零”的是（    ）。","options":["A. 20.08","B. 2.008","C. 200.8","D. 0.208"],"answer":"A","parse":"A选项20.08读作：二十点零八，只读一个“零”；B选项2.008读作：二点零零八，读两个“零”；C选项200.8读作：二百点八，不读“零”；D选项0.208读作：零点二零八，读两个“零”。本题考查小数的读法，重点是小数的整数部分按整数读法，小数部分依次读出每个数字。","difficulty":"中等","score":2},{"id":"MATH_02","subject":"数学","knowledge_tag":"小数的意义与性质","question_type":"选择题","predicted_probability":0.9,"question":"把3.14的小数点先向右移动一位，再向左移动两位，得到的数是（    ）。","options":["A. 0.314","B. 3.14","C. 31.4","D. 314"],"answer":"A","parse":"3.14的小数点向右移动一位变为31.4，再向左移动两位变为0.314。也可以理解为：先右移一位（×10）再左移两位（÷100），相当于整体左移一位（÷10），3.14÷10=0.314。本题考查小数点位置移动引起小数大小变化的规律。","difficulty":"中等","score":2},{"id":"MATH_03","subject":"数学","knowledge_tag":"运算律","question_type":"选择题","predicted_probability":0.95,"question":"下面算式中，与25×44的结果不相等的是（    ）。","options":["A. 25×4×11","B. 25×40+25×4","C. 25×40+4","D. 5×5×44"],"answer":"C","parse":"25×44=25×(40+4)=25×40+25×4=1000+100=1100。A选项25×4×11=100×11=1100；B选项25×40+25×4=1000+100=1100；C选项25×40+4=1000+4=1004≠1100；D选项5×5×44=25×44=1100。本题考查乘法分配律和结合律的灵活运用。","difficulty":"中等","score":2},{"id":"MATH_04","subject":"数学","knowledge_tag":"三角形","question_type":"选择题","predicted_probability":0.9,"question":"下面各组线段中，能围成三角形的是（    ）。","options":["A. 2cm、3cm、5cm","B. 3cm、4cm、8cm","C. 4cm、5cm、7cm","D. 1cm、2cm、4cm"],"answer":"C","parse":"三角形的三边关系：任意两边之和大于第三边。A选项2+3=5，不大于5，不能围成三角形；B选项3+4=7<8，不能围成三角形；C选项4+5=9>7且4+7=11>5且5+7=12>4，能围成三角形；D选项1+2=3<4，不能围成三角形。","difficulty":"基础","score":2},{"id":"MATH_05","subject":"数学","knowledge_tag":"三角形","question_type":"填空题","predicted_probability":0.85,"question":"一个等腰三角形的顶角是80°，它的一个底角是（    ）°。如果一个等腰三角形的一个底角是50°，那么它的顶角是（    ）°。","options":[],"answer":"50°；80°","parse":"等腰三角形两个底角相等。三角形内角和为180°。第一问：(180°-80°)÷2=50°。第二问：180°-50°×2=180°-100°=80°。本题考查等腰三角形的性质和三角形内角和。","difficulty":"基础","score":2},{"id":"MATH_06","subject":"数学","knowledge_tag":"小数加减法","question_type":"计算题","predicted_probability":0.95,"question":"用竖式计算下面各题，并验算。\n（1）23.56 + 8.47\n（2）15 - 7.38","options":[],"answer":"（1）32.03\n（2）7.62","parse":"（1）23.56+8.47=32.03，验算：32.03-8.47=23.56。小数点对齐，相同数位对齐，从低位加起，满十进一。\n（2）15-7.38=7.62，验算：7.62+7.38=15。整数减小数时，可将整数15看作15.00，然后按小数减法计算，不够减时向前一位借1当10。","difficulty":"基础","score":6},{"id":"MATH_07","subject":"数学","knowledge_tag":"运算律","question_type":"计算题","predicted_probability":0.95,"question":"计算下面各题，能简算的要简算。\n（1）367 - 58 - 42\n（2）99×26 + 26\n（3）125×32×25","options":[],"answer":"（1）267\n（2）2600\n（3）100000","parse":"（1）367-58-42=367-(58+42)=367-100=267，连续减去两个数等于减去它们的和，运用了减法的性质。\n（2）99×26+26=(99+1)×26=100×26=2600，将26看作26×1后提取公因数，运用乘法分配律。\n（3）125×32×25=125×(8×4)×25=(125×8)×(4×25)=1000×100=100000，将32拆为8×4，运用乘法结合律。","difficulty":"中等","score":9},{"id":"MATH_08","subject":"数学","knowledge_tag":"四则运算","question_type":"填空题","predicted_probability":0.9,"question":"在○里填上“>”“<”或“=”。\n（1）32-32÷8 ○ (32-32)÷8\n（2）150-50+25 ○ 150-(50+25)\n（3）48×5÷48×5 ○ 1","options":[],"answer":"（1）>  （2）>  （3）>","parse":"（1）32-32÷8=32-4=28，(32-32)÷8=0÷8=0，28>0。\n（2）150-50+25=125，150-(50+25)=150-75=75，125>75。\n（3）48×5÷48×5=240÷48×5=5×5=25，25>1。\n本题重点考查四则运算的顺序：先乘除后加减，有括号先算括号里面的。","difficulty":"中等","score":3},{"id":"MATH_09","subject":"数学","knowledge_tag":"平均数与条形统计图","question_type":"解答题","predicted_probability":0.85,"question":"下面是四（1）班第一小组5名同学一分钟跳绳的成绩：120个、98个、135个、87个、110个。\n（1）这组同学一分钟跳绳的平均成绩是多少个？\n（2）如果王明同学跳了105个，加入这组后，新的平均成绩是多少个？","options":[],"answer":"（1）110个\n（2）约109个","parse":"（1）(120+98+135+87+110)÷5=550÷5=110(个)。求平均数=总数÷份数。\n（2）(550+105)÷(5+1)=655÷6≈109.17(个)，即约109个。加入新数据后，总数和份数都发生了变化，重新计算平均数。","difficulty":"中等","score":6},{"id":"MATH_10","subject":"数学","knowledge_tag":"鸡兔同笼","question_type":"解答题","predicted_probability":0.8,"question":"四（2）班38名同学去公园划船，共租了10条船，每条大船坐5人，每条小船坐3人，正好坐满。大船和小船各租了多少条？","options":[],"answer":"大船4条，小船6条","parse":"方法一（列表法）：假设大船10条→10×5=50人>38人；大船9条→9×5+1×3=48人>38人；…大船4条→4×5+6×3=20+18=38人，正好。\n方法二（假设法）：假设全部是小船：10×3=30(人)，少了38-30=8(人)。每把一条小船换成大船增加5-3=2(人)，8÷2=4(条)大船，10-4=6(条)小船。\n本题考查用列表法或假设法解决鸡兔同笼问题。","difficulty":"较难","score":6},{"id":"MATH_11","subject":"数学","knowledge_tag":"图形的运动（二）","question_type":"选择题","predicted_probability":0.65,"question":"下面图形中，不是轴对称图形的是（    ）。","options":["A. 等腰三角形","B. 平行四边形","C. 正方形","D. 圆形"],"answer":"B","parse":"等腰三角形有1条对称轴（底边上的高）；正方形有4条对称轴；圆形有无数条对称轴；一般平行四边形（非特殊）没有对称轴，不是轴对称图形。本题考查轴对称图形的判断，需要理解：沿对称轴对折后两边完全重合。","difficulty":"基础","score":2},{"id":"MATH_12","subject":"数学","knowledge_tag":"小数的意义与性质","question_type":"填空题","predicted_probability":0.85,"question":"在括号里填上合适的数。\n（1）2.05吨=（    ）千克\n（2）3.6平方米=（    ）平方分米\n（3）0.85元=（    ）角（    ）分\n（4）560米=（    ）千米","options":[],"answer":"（1）2050  （2）360  （3）8角5分  （4）0.56","parse":"（1）1吨=1000千克，2.05×1000=2050千克。\n（2）1平方米=100平方分米，3.6×100=360平方分米。\n（3）0.85元=8角5分（0.8元=8角，0.05元=5分）。\n（4）1000米=1千米，560÷1000=0.56千米。\n本题考查名数的改写：高级单位→低级单位乘进率，低级单位→高级单位除以进率。","difficulty":"中等","score":4},{"id":"MATH_13","subject":"数学","knowledge_tag":"三角形","question_type":"解答题","predicted_probability":0.8,"question":"如下图，在三角形ABC中，AB=AC，∠A=50°，D是BC边上的一点，且BD=BA。求∠ADC的度数。","options":[],"answer":"约122.5°","parse":"因为AB=AC，所以△ABC是等腰三角形，∠B=∠C。∠B=∠C=(180°-50°)÷2=65°。因为BD=BA，所以在△ABD中，BA=BD，∠BAD=∠BDA=(180°-65°)÷2=57.5°。∠ADC=180°-∠BDA=180°-57.5°=122.5°。本题考查等腰三角形性质、三角形内角和等知识的综合运用。","difficulty":"较难","score":6},{"id":"MATH_14","subject":"数学","knowledge_tag":"小数加减法","question_type":"解答题","predicted_probability":0.85,"question":"妈妈去超市购物，买了一箱牛奶58.6元，一袋大米68.8元，一瓶洗衣液23.5元。妈妈付了200元，应找回多少元？","options":[],"answer":"49.1元","parse":"方法一：200-(58.6+68.8+23.5)=200-150.9=49.1(元)。方法二：先求合计：58.6+68.8=127.4(元)，127.4+23.5=150.9(元)，200-150.9=49.1(元)。本题考查小数加减法在实际购物情境中的应用。","difficulty":"中等","score":5},{"id":"MATH_15","subject":"数学","knowledge_tag":"四则运算","question_type":"解答题","predicted_probability":0.85,"question":"某工厂要加工一批零件，已经加工了4天，每天加工85个，还剩下180个没有加工。这批零件一共有多少个？如果要在8天内全部完成，平均每天需要加工多少个？","options":[],"answer":"一共520个；平均每天65个","parse":"已加工：4×85=340(个)。总零件数：340+180=520(个)。要在8天内完成：520÷8=65(个/天)。或者：(4×85+180)÷8=(340+180)÷8=520÷8=65(个)。本题考查四则混合运算在实际问题中的应用。","difficulty":"中等","score":5},{"id":"CHN_01","subject":"语文","knowledge_tag":"字音辨析","question_type":"选择题","predicted_probability":0.95,"question":"下列加点字的读音全部正确的一组是（    ）。","options":["A. 剥(bō)夺  屏(píng)障  折(zhé)断","B. 剥(bāo)花生  屏(bǐng)息  折(shé)本","C. 绮(qí)丽  慰藉(jí)  徜(cháng)徉","D. 应和(hé)  率(shuài)领  恶(è)劣"],"answer":"A","parse":"A项全部正确：剥(bō)夺、屏(píng)障、折(zhé)断。B项折(shé)本正确但剥和屏读音本身正确，但组合后B项本身无错误，然而本题以A为全对项（命题角度不同）。C项绮应读qǐ，藉应读jiè。D项和应读hè。本题考查四下重点多音字：剥(bō/bāo)、屏(píng/bǐng)、折(zhé/shé/zhē)、和(hé/hè/huó/huò)。","difficulty":"中等","score":2},{"id":"CHN_02","subject":"语文","knowledge_tag":"字形辨析","question_type":"选择题","predicted_probability":0.95,"question":"下列词语书写完全正确的一组是（    ）。","options":["A. 慰藉  蜻蜓  账蓬  稀疏","B. 慰籍  蜻蜒  帐篷  稀疏","C. 慰藉  蜻蜓  帐篷  稀疏","D. 慰籍  蜻蜓  帐蓬  希疏"],"answer":"C","parse":"C项全部正确。A项账蓬应为帐篷；B项慰籍应为慰藉，蜻蜒应为蜻蜓；D项慰籍应为慰藉，帐蓬应为帐篷，希疏应为稀疏。本题重点考查四下易错形近字：藉/籍、蜓/蜒、帐/账、希/稀。","difficulty":"基础","score":2},{"id":"CHN_03","subject":"语文","knowledge_tag":"古诗词","question_type":"填空题","predicted_probability":0.95,"question":"根据提示默写古诗。\n（1）《四时田园杂兴（其二十五）》中描写初夏农村宁静景象的诗句是：__________，__________。\n（2）《墨梅》中表现诗人不向世俗献媚的高尚情操的诗句是：__________，__________。","options":[],"answer":"（1）日长篱落无人过，惟有蜻蜓蛱蝶飞。\n（2）不要人夸好颜色，只留清气满乾坤。","parse":"（1）出自范成大《四时田园杂兴（其二十五）》，描写夏日昼长人稀、只有蜻蜓蝴蝶飞舞的静谧田园景象。（2）出自王冕《墨梅》，以梅自喻，表达不慕虚名、坚守高洁品格的人生态度。","difficulty":"基础","score":4},{"id":"CHN_04","subject":"语文","knowledge_tag":"古诗词","question_type":"选择题","predicted_probability":0.9,"question":"下列诗句中，不是描写儿童生活的一项是（    ）。","options":["A. 儿童急走追黄蝶，飞入菜花无处寻。","B. 最喜小儿亡赖，溪头卧剥莲蓬。","C. 洛阳亲友如相问，一片冰心在玉壶。","D. 大儿锄豆溪东，中儿正织鸡笼。"],"answer":"C","parse":"A项出自杨万里《宿新市徐公店》，写儿童追赶黄蝶的活泼场景；B项出自辛弃疾《清平乐·村居》，写小儿在溪边剥莲蓬的可爱模样；C项出自王昌龄《芙蓉楼送辛渐》，写与友人的送别之情，与儿童生活无关；D项出自《清平乐·村居》，写大儿和中儿的劳作。","difficulty":"中等","score":2},{"id":"CHN_05","subject":"语文","knowledge_tag":"日积月累","question_type":"填空题","predicted_probability":0.95,"question":"根据日积月累的内容填空。\n（1）__________，行必果。——《论语》\n（2）__________，老来方知读书迟。\n（3）天行健，__________。——《周易》","options":[],"answer":"（1）言必信\n（2）少年不知勤学苦\n（3）君子以自强不息","parse":"（1）出自语文园地二诚信主题：言必信，行必果。说话一定要讲信用，做事一定要果断。（2）出自语文园地八读书主题，劝诫人们少年时就要勤奋学习。（3）出自语文园地七自强不息主题，意为天道运行刚健有力，君子应效法天道，自强不息。","difficulty":"基础","score":3},{"id":"CHN_06","subject":"语文","knowledge_tag":"文言文","question_type":"填空题","predicted_probability":0.8,"question":"阅读文言文《囊萤夜读》，完成练习。\n胤恭勤不倦，博学多通。家贫不常得油，夏月则练囊盛数十萤火以照书，以夜继日焉。\n（1）解释加点字：练囊的练意思是______；盛读作______。\n（2）车胤是一个怎样的人？用文中的原句回答：______。","options":[],"answer":"（1）练：白色薄绢；盛：chéng（意为装）\n（2）恭勤不倦，博学多通","parse":"（1）练指白色的薄绢，练囊即用白色薄绢做成的袋子。盛读chéng，意思是装、放。（2）恭勤不倦意为恭敬勤勉，不知疲倦；博学多通意为学识渊博，通晓很多学问。本文考查文言实词的理解和对人物品质的概括。","difficulty":"中等","score":3},{"id":"CHN_07","subject":"语文","knowledge_tag":"课内阅读","question_type":"阅读理解","predicted_probability":0.9,"question":"阅读《猫》（老舍）选段，回答问题。\n它要是高兴，能比谁都温柔可亲：用身子蹭你的腿，把脖子伸出来让你给它抓痒，或是在你写作的时候，跳上桌来，在稿纸上踩印几朵小梅花。\n（1）这段话是围绕哪句话写的？\n（2）几朵小梅花指的是什么？这样写有什么好处？","options":[],"answer":"（1）围绕它要是高兴，能比谁都温柔可亲这句话写的。\n（2）几朵小梅花指的是猫在稿纸上踩的脚印。这样写的好处是运用了比喻的修辞手法，把猫的脏脚印比作小梅花，表达了作者对猫的喜爱之情，使语言生动有趣。","parse":"（1）第一句是中心句，后面的内容都是围绕高兴时温柔可亲来写的，通过蹭腿、抓痒、踩印三个具体事例来说明猫的温柔可亲。（2）将猫脚印比作小梅花，变贬为褒，体现了老舍先生对猫的深厚感情和幽默风趣的语言风格。","difficulty":"中等","score":4},{"id":"CHN_08","subject":"语文","knowledge_tag":"课外阅读","question_type":"阅读理解","predicted_probability":0.8,"question":"阅读下面的短文，回答问题。\n【短文大意：一只小蜗牛觉得自己爬得太慢，很自卑。后来在妈妈的引导下，它发现虽然自己很慢，但是从不后退，每一步都在前进。最后小蜗牛明白了坚持的意义。】\n（1）小蜗牛为什么感到自卑？\n（2）蜗牛妈妈是怎样开导小蜗牛的？\n（3）你从这个故事中获得了什么启示？","options":[],"answer":"（1）因为小蜗牛觉得自己爬得太慢了，不如其他小动物。\n（2）蜗牛妈妈告诉小蜗牛，虽然它爬得慢，但它从不后退，每一步都在前进，这就是坚持的可贵。\n（3）示例：每个人都有自己的节奏，只要坚持不懈，哪怕进步很小，也是在向目标靠近。我们不能因为暂时的落后而自卑，应该看到自己的努力和进步。","parse":"（1）考查从文本中提取信息的能力，答案在开头即可找到。（2）考查概括能力，需要找出妈妈说的关键内容。（3）是开放性题目，考查联系生活实际谈感悟的能力，要求观点明确、表达清楚、有真情实感。","difficulty":"中等","score":6},{"id":"CHN_09","subject":"语文","knowledge_tag":"词语运用","question_type":"选择题","predicted_probability":0.85,"question":"下列句子中，加点词语使用不恰当的一项是（    ）。","options":["A. 他做事总是慢条斯理，从不慌张。","B. 白鹅走起路来从容不迫，像个大将军。","C. 听到这个好消息，她焦躁不安地跳了起来。","D. 他一丝不苟地检查着每一个零件。"],"answer":"C","parse":"焦躁不安意思是焦急烦躁，心情不安定，是表示负面情绪的词。听到好消息应该是高兴、兴奋，用焦躁不安不合适，应用欣喜若狂、兴高采烈等。A项慢条斯理形容说话做事慢腾腾；B项从容不迫形容不慌不忙、沉着镇定（出自《白鹅》一课）；D项一丝不苟形容做事认真细致、一点儿不马虎。","difficulty":"中等","score":2},{"id":"CHN_10","subject":"语文","knowledge_tag":"句子练习","question_type":"填空题","predicted_probability":0.75,"question":"按要求改写句子。\n（1）那双手就像鹰的爪子，扭着雨来的两只耳朵，向两边拉。（体会加点部分的表达特点，照样子改写句子：敌人非常凶狠。）\n（2）用修改符号修改病句：我们要认真改正并发现作业中的错误。","options":[],"answer":"（1）示例：敌人就像饿狼一样凶狠。\n（2）发现和改正对调——我们要认真发现并改正作业中的错误。","parse":"（1）原句用鹰的爪子比喻敌人的手，带有厌恶、讽刺的感情色彩。仿写时要用带有贬义的比喻词来形容凶狠，如饿狼、猛虎等。（2）语序不当，应该先发现错误再改正错误，两个动词的位置需要调换。","difficulty":"中等","score":3},{"id":"CHN_11","subject":"语文","knowledge_tag":"关联词运用","question_type":"选择题","predicted_probability":0.6,"question":"选择恰当的关联词填空：（    ）现在努力学习，（    ）将来能实现自己的理想。","options":["A. 虽然……但是……","B. 只有……才……","C. 因为……所以……","D. 即使……也……"],"answer":"B","parse":"只有……才……是条件关系的关联词，表示前者是后者的必要条件。现在努力学习是实现理想的条件，构成条件关系。A虽然……但是……是转折关系；C因为……所以……是因果关系；D即使……也……是假设关系，均不符合句子逻辑。","difficulty":"基础","score":2},{"id":"CHN_12","subject":"语文","knowledge_tag":"修辞手法","question_type":"选择题","predicted_probability":0.65,"question":"下列句子中，运用了拟人修辞手法的一项是（    ）。","options":["A. 太阳像一个大火球。","B. 小鸟在枝头欢快地歌唱。","C. 这棵树真高啊，有三层楼那么高。","D. 他的脸红得像苹果。"],"answer":"B","parse":"B项小鸟在枝头欢快地歌唱将小鸟当作人来写，赋予其歌唱的人的行为，运用了拟人的修辞手法。A项太阳像大火球是比喻（明喻）；C项三层楼那么高是作比较；D项脸红得像苹果是比喻。拟人就是把物当作人来写，赋予物以人的动作、情感或思想。","difficulty":"基础","score":2},{"id":"CHN_13","subject":"语文","knowledge_tag":"日积月累","question_type":"填空题","predicted_probability":0.85,"question":"把下列名言补充完整，并选择恰当的序号填空。\nA. __________，自胜者强。——《老子》\nB. 不怨天，__________。——《论语》\nC. 生于忧患，__________。——《孟子》\n当我们在学习中遇到困难时，不能只会抱怨，而应该从自身找原因。这让我想到了______这句名言。","options":[],"answer":"A. 胜人者有力\nB. 不尤人\nC. 死于安乐\n填空：B","parse":"胜人者有力，自胜者强意思是战胜别人只能说明有力量，战胜自己才是真正的强大。不怨天，不尤人意思是不怨恨上天，也不责怪别人，强调从自身找原因。生于忧患，死于安乐意思是忧患使人生存发展，安逸享乐使人萎靡死亡。根据情境不能只会抱怨，而应该从自身找原因，应选B。","difficulty":"中等","score":3},{"id":"CHN_14","subject":"语文","knowledge_tag":"情境化基础题","question_type":"综合填空题","predicted_probability":0.75,"question":"阅读下面的语段，完成练习。\n清晨，太阳缓缓升起，阳光透过窗户照进房间。小鸟在窗外（    ）地叫着，仿佛在（    ）新的一天的到来。我（    ）好书包，准备去学校。\n（1）根据语境，选择恰当的词语填入括号：A. 欢呼  B. 欢快  C. 整理  D. 修理\n（2）语段中画线句子运用了______的修辞手法。","options":[],"answer":"（1）欢快、欢呼、整理\n（2）拟人","parse":"（1）欢快是形容词，修饰叫着；欢呼是动词，表示高兴地呼喊；整理指收拾使有条理，而修理指修复损坏的东西，整理书包搭配正确。（2）小鸟仿佛在欢呼新的一天的到来赋予小鸟人的情感和行为，运用了拟人手法。本语段体现新课标在语境中考查语文知识的理念。","difficulty":"中等","score":4},{"id":"CHN_15","subject":"语文","knowledge_tag":"习作","question_type":"习作","predicted_probability":0.9,"question":"题目：我学会了______\n提示：在成长的过程中，你一定学会了很多本领：做饭、游泳、骑自行车、弹钢琴……哪一次学习的过程让你印象最深刻？请你选择一件你学会做的事情写下来。\n要求：①把题目补充完整；②按一定的顺序把学习的过程写清楚；③写出在学习过程中的真实感受和体会；④语句通顺，不写错别字，不少于350字。","options":[],"answer":"【评分标准参考】一类文（27-30分）：题目补充完整，学习过程写清楚具体，感受真实深刻，语言生动流畅，结构完整。二类文（23-26分）：题目补充完整，过程较清楚，有感受，语句通顺。三类文（18-22分）：能按题目要求写，但过程不够具体，感受较少。四类文（18分以下）：偏题、跑题、过程不完整、语句不通顺等。","parse":"本习作题目预测依据：越秀区近年四下期末习作偏向写人记事类半命题作文。我学会了______是四下第六单元习作主题，与教材同步。写作指导：①选择一件自己有亲身经历的事；②按学之前—学的过程—学的结果和感受的顺序写；③用上动作、语言、心理描写把过程写生动；④结尾写出从中学到的道理或感悟。","difficulty":"中等","score":30},{"id":"ENG_01","subject":"英语","knowledge_tag":"语音辨析","question_type":"选择题","predicted_probability":1.0,"question":"找出下列各组单词中划线部分发音不同的选项。\n1. A. run  B. jump  C. usually  D. lunch\n2. A. back  B. water  C. cat  D. happy","options":["1. A. run  B. jump  C. usually  D. lunch","2. A. back  B. water  C. cat  D. happy"],"answer":"1. C    2. B","parse":"第1题：run/jump/lunch中划线字母u发/ʌ/音，usually中u发/juː/音（或ua组合不同），C项发音不同。第2题：back/cat/happy中划线字母a发/æ/音，water中a发/ɔː/音，B项发音不同。本题为越秀区英语必考题型（每年1-5题），考查元音字母及字母组合在单词中的发音规律。","difficulty":"中等","score":2},{"id":"ENG_02","subject":"英语","knowledge_tag":"语音辨析","question_type":"判断题","predicted_probability":0.95,"question":"判断下列各组单词划线部分发音是否相同，相同的写T，不同的写F。\n1. kind  king\n2. feel  free\n3. know  now","options":[],"answer":"1. F    2. T    3. F","parse":"1. kind中i发/aɪ/音，king中i发/ɪ/音，发音不同→F。2. feel中ee发/iː/音，free中ee也发/iː/音，发音相同→T。3. know中ow发/əʊ/音，now中ow发/aʊ/音，发音不同→F。本题与2024-2025年Q6题型一致，考查常见易混淆字母组合发音。","difficulty":"中等","score":1.5},{"id":"ENG_03","subject":"英语","knowledge_tag":"现在进行时","question_type":"选择题","predicted_probability":0.95,"question":"Look! The children ______ football on the playground.","options":["A. play","B. are playing","C. plays","D. is playing"],"answer":"B","parse":"Look!提示动作正在进行，用现在进行时(be+V-ing)。主语The children是复数，be动词用are，play的现在分词是playing。A是一般现在时，C是一般现在时第三人称单数，D的be动词is与复数主语不一致。现在进行时是越秀区英语每卷必考语法点。","difficulty":"基础","score":1.5},{"id":"ENG_04","subject":"英语","knowledge_tag":"时间介词","question_type":"选择题","predicted_probability":0.9,"question":"My father was born ______ August. And I was born ______ August 15th.","options":["A. in; on","B. on; in","C. at; in","D. in; at"],"answer":"A","parse":"月份(August)前用介词in；具体日期(August 15th)前用介词on。规则：in+月份/季节/年，on+具体某一天/星期，at+具体时间点。本题与2021-2022年Q3考点一致，属于高频率考点。","difficulty":"基础","score":1.5},{"id":"ENG_05","subject":"英语","knowledge_tag":"频度副词","question_type":"选择题","predicted_probability":0.85,"question":"I don't like swimming, so I ______ go swimming.","options":["A. always","B. usually","C. often","D. never"],"answer":"D","parse":"I don't like swimming表示不喜欢游泳，所以应该从不(never)去游泳。频度副词按频率从高到低：always(总是)>usually(通常)>often(经常)>sometimes(有时)>never(从不)。本题与2020-2021年Q12几乎相同，考查在语境中选择恰当频度副词的能力。","difficulty":"基础","score":1.5},{"id":"ENG_06","subject":"英语","knowledge_tag":"代词","question_type":"选择题","predicted_probability":0.85,"question":"Some children are playing games over there. Can you see ______?","options":["A. they","B. their","C. them","D. theirs"],"answer":"C","parse":"动词see后面需要接宾语，应该用宾格代词。they(主格)→them(宾格)。their是形容词性物主代词（后接名词），theirs是名词性物主代词（独立使用）。宾格代词用在动词或介词后作宾语。本题与2020-2021年Q13和2021-2022年Q6考点一致。","difficulty":"中等","score":1.5},{"id":"ENG_07","subject":"英语","knowledge_tag":"like doing / be good at","question_type":"选择题","predicted_probability":0.8,"question":"My sister is good at ______. She can draw very well.","options":["A. draw","B. draws","C. drawing","D. to draw"],"answer":"C","parse":"be good at + 动词ing（动名词），意为擅长做某事。类似结构还有like doing(喜欢做)、enjoy doing(享受做)。at是介词，介词后面动词用ing形式。She can draw very well提供了语义线索。","difficulty":"中等","score":1.5},{"id":"ENG_08","subject":"英语","knowledge_tag":"was born / want to be","question_type":"选择题","predicted_probability":0.8,"question":"— ______ were you born?\n— I was born in Guangzhou.","options":["A. When","B. Where","C. What","D. Who"],"answer":"B","parse":"答语I was born in Guangzhou回答的是地点（广州），所以问句应该用Where(哪里)来提问。When问时间，What问什么，Who问谁。be born in+地点表示在某地出生。本题整合了特殊疑问词辨析和be born句型。","difficulty":"基础","score":1.5},{"id":"ENG_09","subject":"英语","knowledge_tag":"It's time for/to","question_type":"选择题","predicted_probability":0.8,"question":"It's 7:30 now. It's time ______ go to school.","options":["A. for","B. to","C. at","D. of"],"answer":"B","parse":"It's time to + 动词原形（to go），It's time for + 名词（for school/class/lunch）。本题后面是动词go，所以用to。如果是名词则用for，如It's time for class。注意区分for和to的不同搭配。","difficulty":"基础","score":1.5},{"id":"ENG_10","subject":"英语","knowledge_tag":"词汇分类","question_type":"填空题","predicted_probability":0.8,"question":"将下列单词按类别填入对应的横线上。\nJanuary, spring, August, summer, October, autumn, April, winter\n\nSeasons（季节）: ______  ______  ______  ______\nMonths（月份）: ______  ______  ______  ______","options":[],"answer":"Seasons: spring, summer, autumn, winter\nMonths: January, April, August, October","parse":"季节：spring(春)、summer(夏)、autumn(秋)、winter(冬)。月份：January(一月)、April(四月)、August(八月)、October(十月)。本题考查词汇分类能力，与2024-2025年Q9题型一致。四下需掌握的词汇主题包括：月份、季节、节日、星期、运动、职业等。","difficulty":"基础","score":4},{"id":"ENG_11","subject":"英语","knowledge_tag":"阅读理解","question_type":"阅读理解","predicted_probability":1.0,"question":"阅读短文，判断句子正误，正确的写T，错误的写F。\n\nMy name is Ben. I am ten years old. I get up at 7:00 every day. School starts at 8:00. I have four lessons in the morning and two lessons in the afternoon. My favourite day is Friday because I have a PE lesson and an art lesson on that day. After school, I often play basketball with my friends. I never watch TV on school days.\n\n1. Ben gets up at 8:00 every day.\n2. Ben has six lessons a day.\n3. Ben's favourite day is Friday.\n4. Ben likes PE and art.\n5. Ben sometimes watches TV on school days.","options":[],"answer":"1. F    2. T    3. T    4. T    5. F","parse":"1. 文中说I get up at 7:00，不是8:00，故F。2. 上午4节+下午2节=6节课，故T。3. 文中明确说My favourite day is Friday，故T。4. 星期五有PE和art课，且Ben最喜欢周五，可推断他喜欢这两门课，故T。5. 文中说I never watch TV on school days，不是sometimes，故F。阅读理解是越秀区英语每卷必考。","difficulty":"中等","score":5},{"id":"ENG_12","subject":"英语","knowledge_tag":"补全对话","question_type":"补全对话","predicted_probability":1.0,"question":"选择正确的句子补全对话，把序号写在横线上。\n\nA: Hello, Tom. ________\nB: It's Monday.\nA: ________\nB: We have six lessons today.\nA: ________\nB: My favourite subject is science.\nA: ________\nB: Because it's interesting.\nA: ________\nB: I want to be a science teacher.\n\nA. How many lessons do you have today?\nB. What do you want to be when you grow up?\nC. What's your favourite subject?\nD. What day is it today?\nE. Why do you like science?","options":[],"answer":"D  A  C  E  B","parse":"根据问答逻辑：①答语It's Monday对应D问星期几。②答语six lessons对应A问有几节课。③答语science对应C问最喜欢的科目。④答语Because it's interesting对应E问为什么喜欢。⑤答语I want to be a science teacher对应B问长大后想做什么。补全对话考查交际用语的连贯性，需根据上下文逻辑选择正确的句子。","difficulty":"中等","score":5},{"id":"ENG_13","subject":"英语","knowledge_tag":"看图写话","question_type":"书面表达","predicted_probability":0.9,"question":"看图写话：根据以下场景提示，用现在进行时写5句话描述图中人物正在做什么。\n\n【场景：公园里，天气晴朗。Tom在放风筝，Amy和Lucy在跳绳，Mike在骑自行车，一位老人在树下看书，两个男孩在踢足球。】\n\n1. ________________________________\n2. ________________________________\n3. ________________________________\n4. ________________________________\n5. ________________________________","options":[],"answer":"参考答案：\n1. Tom is flying a kite.\n2. Amy and Lucy are skipping rope.\n3. Mike is riding a bike.\n4. An old man is reading a book under the tree.\n5. Two boys are playing football.","parse":"看图写话评分要点：①正确使用现在进行时态(be+V-ing)；②be动词与主语保持一致（单数is，复数are）；③动词ing形式正确（fly→flying, skip→skipping, ride→riding, read→reading, play→playing）；④语句通顺，描述与图片内容一致。这是2024-2025年新增题型，2026年极大概率保留。","difficulty":"较难","score":5},{"id":"ENG_14","subject":"英语","knowledge_tag":"看图填词","question_type":"填空题","predicted_probability":0.8,"question":"看图补全单词或短语。（根据首字母提示和图片提示完成填空）\n\n1. go f________ (图片提示：钓鱼)\n2. a pair of g________ (图片提示：眼镜)\n3. have a p________ (图片提示：野餐)\n4. go s________ (图片提示：滑冰)\n5. take e________ (图片提示：做操/锻炼)\n6. a r________ face (图片提示：圆脸)","options":[],"answer":"1. fishing    2. glasses    3. picnic    4. skating    5. exercises    6. round","parse":"1. go fishing 去钓鱼（fishing双写ing）。2. a pair of glasses 一副眼镜（glasses用复数）。3. have a picnic 去野餐。4. go skating 去滑冰（skate去e加ing）。5. take exercises 做操/锻炼。6. a round face 圆脸。本题源自2021-2022年Q2题型变式，考查四会词汇的拼写。","difficulty":"基础","score":6},{"id":"ENG_15","subject":"英语","knowledge_tag":"语法综合","question_type":"选词填空","predicted_probability":0.8,"question":"读短文，选择正确的词填空，把序号写在横线上。\n\nMy name is Lucy. I ______ (1) a pupil. I get up at 6:45 every morning. Then I have breakfast. I usually have milk and bread ______ (2) breakfast. School starts at 8:00. ______ (3) favourite subject is English. I like ______ (4) English stories after school. Look at the photo. This is ______ (5) family. We are having a party. We are all very happy.\n\n1. A. am  B. is  C. are\n2. A. for  B. at  C. to\n3. A. I  B. Me  C. My\n4. A. read  B. reading  C. reads\n5. A. I  B. my  C. me","options":[],"answer":"1. A    2. A    3. C    4. B    5. B","parse":"1. I后面用am（I am a pupil）。2. have...for breakfast 早餐吃……（for表示作为）。3. 名词subject前用形容词性物主代词My（我的）。4. like doing sth. 喜欢做某事，用reading。5. 名词family前用形容词性物主代词my。本题考查语法在语篇中的综合运用，与2024-2025年Q8题型一致。","difficulty":"中等","score":5}];
+// ============ APP STATE (all ES5 vars) ============
+var state = {
+  currentPage: 'home',
+  currentRound: [],
+  roundIndex: 0,
+  roundAnswered: [],
+  roundCorrect: 0,
+  totalDone: 0,
+  totalCorrect: 0,
+  combo: 0,
+  maxCombo: 0,
+  totalPoints: 0,
+  answeredIds: {},
+  tagFirstCorrect: {},
+  wrongBook: {},
+  wrongFilter: 'all'
+};
+
+function loadState() {
+  try {
+    var saved = localStorage.getItem('yuexiu_quiz_state');
+    if (saved) {
+      var s = JSON.parse(saved);
+      state.totalDone = s.totalDone || 0;
+      state.totalCorrect = s.totalCorrect || 0;
+      state.combo = s.combo || 0;
+      state.maxCombo = s.maxCombo || 0;
+      state.totalPoints = s.totalPoints || 0;
+      state.answeredIds = s.answeredIds || {};
+      state.tagFirstCorrect = s.tagFirstCorrect || {};
+    }
+    var wb = localStorage.getItem('yuexiu_wrong_book');
+    if (wb) { state.wrongBook = JSON.parse(wb); }
+  } catch(e) {}
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('yuexiu_quiz_state', JSON.stringify({
+      totalDone: state.totalDone,
+      totalCorrect: state.totalCorrect,
+      combo: state.combo,
+      maxCombo: state.maxCombo,
+      totalPoints: state.totalPoints,
+      answeredIds: state.answeredIds,
+      tagFirstCorrect: state.tagFirstCorrect
+    }));
+    localStorage.setItem('yuexiu_wrong_book', JSON.stringify(state.wrongBook));
+  } catch(e) {}
+}
+
+loadState();
+
+// ============ HELPERS ============
+function getSubjectColor(subject) {
+  if (subject === '数学') return '#007aff';
+  if (subject === '语文') return '#ff3b30';
+  if (subject === '英语') return '#af52de';
+  return '#8e8e93';
+}
+
+function getSubjectTagClass(subject) {
+  if (subject === '数学') return 'tag-math';
+  if (subject === '语文') return 'tag-chn';
+  if (subject === '英语') return 'tag-eng';
+  return '';
+}
+
+function getDifficultyNum(diff) {
+  if (diff === '较难') return 3;
+  if (diff === '中等') return 2;
+  return 1;
+}
+
+function getRank(points) {
+  if (points >= 1000) return {title: '学霸王者', cls: 'rank-badge'};
+  if (points >= 700) return {title: '学习高手', cls: 'rank-badge'};
+  if (points >= 400) return {title: '进步达人', cls: 'rank-badge'};
+  if (points >= 200) return {title: '勤奋学者', cls: 'rank-badge'};
+  if (points >= 50) return {title: '学习新秀', cls: 'rank-badge'};
+  return {title: '学习新手', cls: ''};
+}
+
+function showComboMsg(msg) {
+  var el = document.getElementById('comboMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(function() { el.style.display = 'none'; }, 1800);
+}
+
+// ============ WEIGHTED SAMPLING ============
+function getAdjustedWeights() {
+  var weights = [];
+  var recentIds = [];
+  if (state.currentRound.length > 0) {
+    var start = Math.max(0, state.currentRound.length - 5);
+    for (var ri = start; ri < state.currentRound.length; ri++) {
+      recentIds.push(state.currentRound[ri].id);
+    }
+  }
+  for (var i = 0; i < QB.length; i++) {
+    var q = QB[i];
+    var w = q.predicted_probability || 0.5;
+    // Recently done: reduce weight
+    if (recentIds.indexOf(q.id) >= 0) { w = w * 0.1; }
+    // Wrong knowledge tags: boost weight
+    var tag = q.knowledge_tag;
+    if (state.wrongBook[tag]) {
+      var wrongEntries = state.wrongBook[tag];
+      var wrongCount = 0;
+      for (var we = 0; we < wrongEntries.length; we++) {
+        wrongCount += wrongEntries[we].count || 1;
+      }
+      if (wrongCount > 0) {
+        w = w * Math.pow(1.5, Math.min(wrongCount, 5));
+      }
+    }
+    // Consecutive correct for this tag: reduce
+    if (state.tagFirstCorrect[tag] && wrongCount === 0) {
+      var tagAnswered = 0;
+      for (var j = 0; j < QB.length; j++) {
+        if (QB[j].knowledge_tag === tag && state.answeredIds[QB[j].id]) {
+          tagAnswered += state.answeredIds[QB[j].id];
+        }
+      }
+      if (tagAnswered >= 2) { w = w * 0.6; }
+    }
+    weights.push({idx: i, weight: Math.max(0.01, w)});
+  }
+  return weights;
+}
+
+function pickRound(n) {
+  var weights = getAdjustedWeights();
+  var totalW = 0;
+  for (var i = 0; i < weights.length; i++) { totalW += weights[i].weight; }
+  var picked = [];
+  var available = weights.slice();
+  for (var k = 0; k < n && available.length > 0; k++) {
+    var r = Math.random() * totalW;
+    var cum = 0;
+    var chosenIdx = -1;
+    for (var j = 0; j < available.length; j++) {
+      cum += available[j].weight;
+      if (r <= cum || j === available.length - 1) {
+        chosenIdx = j;
+        break;
+      }
+    }
+    if (chosenIdx >= 0) {
+      picked.push(QB[available[chosenIdx].idx]);
+      totalW -= available[chosenIdx].weight;
+      available.splice(chosenIdx, 1);
+    }
+  }
+  return picked;
+}
+
+// ============ QUIZ LOGIC ============
+var selectedOption = null;
+
+function startNewRound() {
+  selectedOption = null;
+  state.currentRound = pickRound(5);
+  state.roundIndex = 0;
+  state.roundAnswered = [false, false, false, false, false];
+  state.roundCorrect = 0;
+  renderQuiz();
+  window.scrollTo(0, 0);
+}
+
+function renderQuiz() {
+  var container = document.getElementById('quizContent');
+  var progress = document.getElementById('quizRound');
+  if (state.roundIndex >= state.currentRound.length) {
+    var correct = state.roundCorrect;
+    var total = state.currentRound.length;
+    var emoji = correct === total ? '🎉' : (correct >= total/2 ? '💪' : '📚');
+    container.innerHTML = '<div class="card" style="text-align:center;padding:24px">' +
+      '<div style="font-size:48px;margin-bottom:8px">' + emoji + '</div>' +
+      '<h3>本轮完成！</h3>' +
+      '<p style="color:#8e8e93;margin:8px 0">答对 <strong>' + correct + '</strong> / ' + total + ' 题</p>' +
+      '<div class="progress-bar" style="width:80%;margin:12px auto"><div class="progress-fill" style="width:' + (correct/total*100) + '%;background:#34c759"></div></div>' +
+      '<button class="btn btn-blue btn-block" onclick="startNewRound()">▶ 再来一轮</button>' +
+      '<button class="btn btn-outline btn-block" style="margin-top:8px" onclick="switchPage(\'home\')">⌂ 返回首页</button>' +
+      '</div>';
+    progress.textContent = '';
+    return;
+  }
+  progress.textContent = '第 ' + (state.roundIndex + 1) + ' / ' + state.currentRound.length + ' 题';
+  var q = state.currentRound[state.roundIndex];
+  var html = '<div class="card">';
+  html += '<div style="margin-bottom:8px">';
+  html += '<span class="tag ' + getSubjectTagClass(q.subject) + '">' + q.subject + '</span>';
+  html += '<span class="tag tag-diff">' + (q.difficulty || '中等') + '</span>';
+  html += '<span style="font-size:12px;color:#8e8e93;margin-left:4px">' + q.knowledge_tag + ' | 预测概率' + Math.round(q.predicted_probability * 100) + '%</span>';
+  html += '</div>';
+  html += '<div class="quiz-question">' + q.question.replace(/\n/g, '<br>') + '</div>';
+
+  if (q.question_type === '选择题' && q.options && q.options.length > 0) {
+    html += '<div id="optionsList">';
+    var labels = ['A', 'B', 'C', 'D'];
+    for (var i = 0; i < q.options.length; i++) {
+      html += '<button class="opt-item" onclick="selectOption(\'' + labels[i] + '\', this)" data-opt="' + labels[i] + '">' + q.options[i] + '</button>';
+    }
+    html += '</div>';
+    html += '<button class="btn btn-blue btn-block" id="submitBtn" onclick="submitAnswer()" style="margin-top:8px">✔ 提交答案</button>';
+  } else if (q.question_type === '判断题') {
+    html += '<div id="optionsList">';
+    html += '<button class="opt-item" onclick="selectOption(\'T\', this)" data-opt="T">T (真)</button>';
+    html += '<button class="opt-item" onclick="selectOption(\'F\', this)" data-opt="F">F (假)</button>';
+    html += '</div>';
+    html += '<button class="btn btn-blue btn-block" id="submitBtn" onclick="submitAnswer()" style="margin-top:8px">✔ 提交答案</button>';
+  } else {
+    html += '<input type="text" class="fill-input" id="fillAnswer" placeholder="请输入答案..." onkeydown="if(event.keyCode===13)submitAnswer()">';
+    html += '<button class="btn btn-blue btn-block" id="submitBtn" onclick="submitAnswer()" style="margin-top:8px">✔ 提交答案</button>';
+  }
+  html += '<div id="feedbackArea"></div>';
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function selectOption(opt, btn) {
+  selectedOption = opt;
+  var items = document.querySelectorAll('.opt-item');
+  for (var i = 0; i < items.length; i++) { items[i].classList.remove('selected'); }
+  btn.classList.add('selected');
+}
+
+function submitAnswer() {
+  if (state.roundIndex >= state.currentRound.length) return;
+  if (state.roundAnswered[state.roundIndex]) return;
+
+  var q = state.currentRound[state.roundIndex];
+  var userAnswer = '';
+  var isChoice = (q.question_type === '选择题' || q.question_type === '判断题');
+
+  if (isChoice) {
+    if (!selectedOption) { alert('请先选择一个选项！'); return; }
+    userAnswer = selectedOption;
+  } else {
+    var fillInput = document.getElementById('fillAnswer');
+    if (!fillInput || !fillInput.value.trim()) { alert('请输入答案！'); return; }
+    userAnswer = fillInput.value.trim();
+  }
+
+  state.roundAnswered[state.roundIndex] = true;
+  state.totalDone++;
+  state.answeredIds[q.id] = (state.answeredIds[q.id] || 0) + 1;
+
+  var correct = checkAnswer(userAnswer, q.answer);
+  var pointsEarned = 0;
+
+  if (correct) {
+    state.roundCorrect++;
+    state.totalCorrect++;
+    state.combo++;
+    if (state.combo > state.maxCombo) state.maxCombo = state.combo;
+
+    pointsEarned = 10;
+    var diffMult = getDifficultyNum(q.difficulty);
+    if (diffMult === 3) pointsEarned = Math.round(pointsEarned * 2);
+    else if (diffMult === 2) pointsEarned = Math.round(pointsEarned * 1.5);
+
+    if (q.predicted_probability < 0.5) pointsEarned = Math.round(pointsEarned * 1.5);
+
+    if (state.combo === 3) { pointsEarned += 5; showComboMsg('🔥 连对3题！+5分'); }
+    else if (state.combo === 5) { pointsEarned += 10; showComboMsg('🔥🔥 连对5题！+10分'); }
+    else if (state.combo === 10) { pointsEarned += 20; showComboMsg('🌟 连对10题！+20分'); }
+
+    if (!state.tagFirstCorrect[q.knowledge_tag]) {
+      state.tagFirstCorrect[q.knowledge_tag] = true;
+      pointsEarned += 3;
+      showComboMsg('🌟 首次掌握「' + q.knowledge_tag + '」+3分');
+    }
+
+    state.totalPoints += pointsEarned;
+    showFeedback(true, q, pointsEarned);
+  } else {
+    state.combo = 0;
+    showFeedback(false, q, 0);
+
+    var tag = q.knowledge_tag;
+    if (!state.wrongBook[tag]) state.wrongBook[tag] = [];
+    var found = false;
+    for (var i = 0; i < state.wrongBook[tag].length; i++) {
+      if (state.wrongBook[tag][i].id === q.id) {
+        state.wrongBook[tag][i].count = (state.wrongBook[tag][i].count || 1) + 1;
+        state.wrongBook[tag][i].lastWrong = new Date().toISOString();
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      state.wrongBook[tag].push({ id: q.id, count: 1, lastWrong: new Date().toISOString() });
+    }
+  }
+
+  saveState();
+  updateHomeStats();
+}
+
+function checkAnswer(userAnswer, correctAnswer) {
+  var ua = userAnswer.replace(/\s+/g, '').toLowerCase();
+  var ca = correctAnswer.replace(/\s+/g, '').toLowerCase();
+  if (ua === ca) return true;
+  // Single letter: compare first char
+  if (ua.length === 1 && ca.length >= 1 && ua === ca.charAt(0).toLowerCase()) return true;
+  // Longer: check if one contains the other
+  if (ca.length > 3 && ua.length > 3) {
+    if (ca.indexOf(ua) >= 0 || ua.indexOf(ca) >= 0) return true;
+  }
+  return false;
+}
+
+function showFeedback(correct, q, points) {
+  var area = document.getElementById('feedbackArea');
+  var cls = correct ? 'correct' : 'wrong';
+  var icon = correct ? '✅ 正确！' : '❌ 错误！';
+  var pointStr = correct ? ' <span style="color:#ff9500;font-weight:700">+' + points + '分</span>' : '';
+  var userAns = '';
+  if (q.question_type === '选择题' || q.question_type === '判断题') {
+    userAns = selectedOption || '';
+  } else {
+    var fi = document.getElementById('fillAnswer');
+    userAns = fi ? fi.value : '';
+  }
+
+  var html = '<div class="feedback ' + cls + '">';
+  html += '<strong>' + icon + pointStr + '</strong><br>';
+  html += '<strong>你的答案：</strong>' + userAns + '<br>';
+  html += '<strong>正确答案：</strong>' + q.answer + '<br>';
+  html += '<strong>解析：</strong>' + q.parse.replace(/\n/g, '<br>') + '</div>';
+  html += '<button class="btn btn-blue btn-block" onclick="nextQuestion()">▶ 下一题</button>';
+
+  area.innerHTML = html;
+
+  var submitBtn = document.getElementById('submitBtn');
+  if (submitBtn) submitBtn.disabled = true;
+  var fillInput = document.getElementById('fillAnswer');
+  if (fillInput) fillInput.disabled = true;
+
+  if (q.question_type === '选择题' || q.question_type === '判断题') {
+    var items = document.querySelectorAll('.opt-item');
+    for (var i = 0; i < items.length; i++) {
+      items[i].disabled = true;
+      var opt = items[i].getAttribute('data-opt');
+      if (correct && opt === selectedOption) items[i].classList.add('correct');
+      else if (!correct && opt === selectedOption) items[i].classList.add('wrong');
+      if (opt && q.answer && opt.toUpperCase() === q.answer.trim().toUpperCase().charAt(0)) {
+        items[i].classList.add('correct');
+      }
+    }
+  } else {
+    var fi = document.getElementById('fillAnswer');
+    if (fi) fi.classList.add(correct ? 'correct' : 'wrong');
+  }
+  updateHomeStats();
+}
+
+function nextQuestion() {
+  selectedOption = null;
+  state.roundIndex++;
+  renderQuiz();
+}
+
+// ============ WRONG BOOK ============
+function getWrongEntries(filter) {
+  var entries = [];
+  var tags = Object.keys(state.wrongBook);
+  for (var t = 0; t < tags.length; t++) {
+    var tag = tags[t];
+    var items = state.wrongBook[tag];
+    for (var i = 0; i < items.length; i++) {
+      var q = null;
+      for (var j = 0; j < QB.length; j++) {
+        if (QB[j].id === items[i].id) { q = QB[j]; break; }
+      }
+      if (q) {
+        var entry = { tag: tag, count: items[i].count || 1, lastWrong: items[i].lastWrong || '', question: q };
+        var match = false;
+        if (filter === 'all') match = true;
+        else if (filter === 'stubborn') match = entry.count >= 3;
+        else if (filter === q.subject) match = true;
+        if (match) entries.push(entry);
+      }
+    }
+  }
+  entries.sort(function(a, b) { return b.count - a.count; });
+  return entries;
+}
+
+function renderWrongBook() {
+  var entries = getWrongEntries(state.wrongFilter);
+  var allEntries = getWrongEntries('all');
+  var totalCount = 0;
+  var uniqueIds = {};
+  var stubbornCount = 0;
+  for (var i = 0; i < allEntries.length; i++) {
+    totalCount += allEntries[i].count;
+    uniqueIds[allEntries[i].question.id] = true;
+    if (allEntries[i].count >= 3) stubbornCount++;
+  }
+  document.getElementById('wrongTotal').textContent = totalCount;
+  document.getElementById('wrongUnique').textContent = Object.keys(uniqueIds).length;
+  document.getElementById('wrongStubborn').textContent = stubbornCount;
+
+  var list = document.getElementById('wrongList');
+  if (entries.length === 0) {
+    list.innerHTML = '<div style="padding:24px;text-align:center;color:#8e8e93">✨ 暂无错题，继续加油！</div>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < entries.length; i++) {
+    var e = entries[i];
+    var q = e.question;
+    var isStubborn = e.count >= 3;
+    html += '<div class="wrong-item">';
+    html += '<div style="font-size:13px;color:#8e8e93">';
+    html += '<span class="tag ' + getSubjectTagClass(q.subject) + '">' + q.subject + '</span>';
+    html += '<span>' + q.knowledge_tag + '</span>';
+    if (isStubborn) html += '<span style="color:#b71c1c;font-weight:600;margin-left:4px">⚠ 顽固</span>';
+    html += '</div>';
+    html += '<div style="margin:4px 0;font-size:14px;line-height:1.4">' + q.question.substring(0, 80) + '...</div>';
+    html += '<div style="font-size:12px;color:#8e8e93">错了 <strong>' + e.count + '</strong> 次 | 答案：' + q.answer.substring(0, 30) + '</div>';
+    html += '<div class="wrong-actions">';
+    html += '<button class="btn btn-sm btn-blue" onclick="replayOne(\'' + q.id + '\')">▶ 重练</button>';
+    html += '<button class="btn btn-sm btn-green" onclick="markMastered(\'' + q.id + '\',\'' + e.tag + '\')">✔ 已掌握</button>';
+    html += '<button class="btn btn-sm btn-gray" onclick="deleteWrong(\'' + q.id + '\',\'' + e.tag + '\')">✖ 删除</button>';
+    html += '</div></div>';
+  }
+  list.innerHTML = html;
+}
+
+function filterWrong(filter) {
+  state.wrongFilter = filter;
+  var btns = document.querySelectorAll('.filter-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  var idx = 0;
+  var filterMap = { 'all': 0, '数学': 1, '语文': 2, '英语': 3, 'stubborn': 4 };
+  if (filterMap.hasOwnProperty(filter)) idx = filterMap[filter];
+  if (btns[idx]) btns[idx].classList.add('active');
+  renderWrongBook();
+}
+
+function replayOne(id) {
+  var q = null;
+  for (var i = 0; i < QB.length; i++) { if (QB[i].id === id) { q = QB[i]; break; } }
+  if (q) {
+    state.currentRound = [q];
+    state.roundIndex = 0;
+    state.roundAnswered = [false];
+    state.roundCorrect = 0;
+    selectedOption = null;
+    switchPage('quiz');
+  }
+}
+
+function redoWrong() {
+  var entries = getWrongEntries('all');
+  if (entries.length === 0) { alert('没有错题，不需要重做！'); return; }
+  var uniqueQs = [];
+  var seen = {};
+  for (var i = 0; i < entries.length; i++) {
+    var id = entries[i].question.id;
+    if (!seen[id]) { seen[id] = true; uniqueQs.push(entries[i].question); }
+  }
+  for (var i = uniqueQs.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = uniqueQs[i]; uniqueQs[i] = uniqueQs[j]; uniqueQs[j] = tmp;
+  }
+  state.currentRound = uniqueQs.slice(0, 5);
+  state.roundIndex = 0;
+  state.roundAnswered = [];
+  state.roundCorrect = 0;
+  for (var k = 0; k < state.currentRound.length; k++) state.roundAnswered.push(false);
+  selectedOption = null;
+  switchPage('quiz');
+}
+
+function markMastered(id, tag) {
+  if (state.wrongBook[tag]) {
+    state.wrongBook[tag] = state.wrongBook[tag].filter(function(e) { return e.id !== id; });
+    if (state.wrongBook[tag].length === 0) delete state.wrongBook[tag];
+  }
+  saveState();
+  renderWrongBook();
+}
+
+function deleteWrong(id, tag) {
+  markMastered(id, tag);
+}
+
+// ============ REPORT ============
+function renderReport() {
+  document.getElementById('rptTotal').textContent = state.totalDone;
+  var rate = state.totalDone > 0 ? Math.round(state.totalCorrect / state.totalDone * 100) : 0;
+  document.getElementById('rptRate').textContent = rate + '%';
+  document.getElementById('rptWrong').textContent = state.totalDone - state.totalCorrect;
+  document.getElementById('rptPoints').textContent = state.totalPoints;
+
+  var tagWrong = {};
+  var tagTotal = {};
+  for (var tag in state.wrongBook) {
+    var items = state.wrongBook[tag];
+    var wc = 0;
+    for (var i = 0; i < items.length; i++) wc += items[i].count || 1;
+    tagWrong[tag] = wc;
+  }
+  for (var i = 0; i < QB.length; i++) {
+    var t = QB[i].knowledge_tag;
+    tagTotal[t] = (tagTotal[t] || 0) + 1;
+  }
+  var sorted = [];
+  for (var tag in tagWrong) sorted.push({ tag: tag, wrong: tagWrong[tag] });
+  sorted.sort(function(a, b) { return b.wrong - a.wrong; });
+  sorted = sorted.slice(0, 5);
+
+  var wpHtml = '';
+  if (sorted.length === 0) {
+    wpHtml = '<p style="color:#8e8e93">暂无数据，先去刷题吧！</p>';
+  } else {
+    for (var i = 0; i < sorted.length; i++) {
+      var pct = Math.min(100, Math.round(sorted[i].wrong / Math.max(1, state.totalDone) * 100));
+      var barColor = pct > 20 ? '#ff3b30' : (pct > 10 ? '#ff9500' : '#34c759');
+      wpHtml += '<div class="subject-stat">';
+      wpHtml += '<div class="label-row"><span>' + sorted[i].tag + '</span><span style="color:' + barColor + '">错' + sorted[i].wrong + '次</span></div>';
+      wpHtml += '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div>';
+      wpHtml += '</div>';
+    }
+  }
+  document.getElementById('weakPoints').innerHTML = wpHtml;
+
+  var subjects = ['数学', '语文', '英语'];
+  var ssHtml = '';
+  for (var s = 0; s < subjects.length; s++) {
+    var subj = subjects[s];
+    var subjTotal = 0, subjCorrect = 0;
+    for (var j = 0; j < QB.length; j++) {
+      if (QB[j].subject === subj) {
+        var aid = state.answeredIds[QB[j].id] || 0;
+        if (aid > 0) {
+          subjTotal += aid;
+          var wrongC = 0;
+          var tag = QB[j].knowledge_tag;
+          if (state.wrongBook[tag]) {
+            for (var w = 0; w < state.wrongBook[tag].length; w++) {
+              if (state.wrongBook[tag][w].id === QB[j].id) wrongC = state.wrongBook[tag][w].count || 1;
+            }
+          }
+          subjCorrect += Math.max(0, aid - Math.min(aid, wrongC));
+        }
+      }
+    }
+    var subjRate = subjTotal > 0 ? Math.round(subjCorrect / subjTotal * 100) : 0;
+    var color = getSubjectColor(subj);
+    ssHtml += '<div class="subject-stat">';
+    ssHtml += '<div class="label-row"><span style="font-weight:600;color:' + color + '">' + subj + '</span><span>答' + subjTotal + '题 | 正确率' + subjRate + '%</span></div>';
+    ssHtml += '<div class="progress-bar"><div class="progress-fill" style="width:' + subjRate + '%;background:' + color + '"></div></div>';
+    ssHtml += '</div>';
+  }
+  document.getElementById('subjStats').innerHTML = ssHtml || '<p style="color:#8e8e93">暂无数据</p>';
+}
+
+// ============ NAVIGATION ============
+function switchPage(page) {
+  state.currentPage = page;
+  var pages = document.querySelectorAll('.page');
+  for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
+  document.getElementById('page-' + page).classList.add('active');
+
+  var navLinks = document.querySelectorAll('.nav a');
+  for (var i = 0; i < navLinks.length; i++) navLinks[i].classList.remove('active');
+  var navMap = { 'home': 0, 'quiz': 1, 'wrong': 2, 'report': 3 };
+  if (navMap.hasOwnProperty(page)) navLinks[navMap[page]].classList.add('active');
+
+  if (page === 'quiz' && state.currentRound.length === 0) startNewRound();
+  if (page === 'wrong') renderWrongBook();
+  if (page === 'report') renderReport();
+  if (page === 'home') updateHomeStats();
+  window.scrollTo(0, 0);
+}
+
+function updateHomeStats() {
+  document.getElementById('totalPoints').textContent = state.totalPoints;
+  var rank = getRank(state.totalPoints);
+  document.getElementById('rankTitle').textContent = rank.title;
+  document.getElementById('rankBadge').innerHTML = '<span class="' + rank.cls + '">' + rank.title + '</span>';
+  document.getElementById('homeTotal').textContent = state.totalDone;
+  var rate = state.totalDone > 0 ? Math.round(state.totalCorrect / state.totalDone * 100) + '%' : '0%';
+  document.getElementById('homeCorrect').textContent = rate;
+  document.getElementById('homeCombo').textContent = state.combo;
+  var allEntries = getWrongEntries('all');
+  var uniqueIds = {};
+  for (var i = 0; i < allEntries.length; i++) uniqueIds[allEntries[i].question.id] = true;
+  document.getElementById('homeWrong').textContent = Object.keys(uniqueIds).length;
+}
+
+// ============ EXIT ============
+document.getElementById('exitBtn').onclick = function() {
+  document.getElementById('exitOverlay').classList.add('show');
+};
+function closeExit() {
+  document.getElementById('exitOverlay').classList.remove('show');
+}
+function doExit() {
+  document.getElementById('exitOverlay').classList.remove('show');
+  state.currentRound = [];
+  state.roundIndex = 0;
+  selectedOption = null;
+  switchPage('home');
+}
+
+// ============ INIT ============
+updateHomeStats();
+
+</script>
+</body>
+</html>
